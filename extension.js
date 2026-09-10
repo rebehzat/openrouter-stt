@@ -12,8 +12,8 @@ import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-const SCHEMA_ID = 'org.gnome.shell.extensions.openrouter-stt';
 const KEYBINDING = 'toggle-record';
 const API_URL = 'https://openrouter.ai/api/v1/audio/transcriptions';
 const RECORD_FORMAT = 'ogg';
@@ -239,9 +239,9 @@ function pasteText(text) {
 /* Extension                                                           */
 /* ------------------------------------------------------------------ */
 
-export default class OpenrouterSttExtension {
+export default class OpenrouterSttExtension extends Extension {
     enable() {
-        this._settings = new Gio.Settings({ schema_id: SCHEMA_ID });
+        this._settings = this.getSettings();
         this._recording = false;
         this._modalActive = false;
         this._grab = null;

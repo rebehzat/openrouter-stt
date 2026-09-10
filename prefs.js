@@ -5,7 +5,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
-const SCHEMA_ID = 'org.gnome.shell.extensions.openrouter-stt';
+import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CUSTOM_MODEL = '…custom model…';
 
@@ -57,9 +57,9 @@ function clearToken() {
     }
 }
 
-export default class OpenrouterSttPreferences {
+export default class OpenrouterSttPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
-        this._settings = new Gio.Settings({ schema_id: SCHEMA_ID });
+        this._settings = this.getSettings();
 
         /* ---------------- API key ---------------- */
         const apiGroup = new Adw.PreferencesGroup({ title: 'OpenRouter API key' });
