@@ -37,7 +37,7 @@ function readToken() {
         return null;
     try {
         const [, contents] = GLib.file_get_contents(path);
-        const token = String(contents).trim();
+        const token = new TextDecoder().decode(contents).trim();
         return token || null;
     } catch (e) {
         log(`openrouter-stt: failed to read token: ${e}`);
@@ -218,7 +218,7 @@ function pasteText(text) {
     clipboard.set_text(St.ClipboardType.CLIPBOARD, text);
     clipboard.set_text(St.ClipboardType.PRIMARY, text);
 
-    const wayland = Meta.is_wayland_compositor();
+    const wayland = !!global.context.get_wayland_compositor();
     let tool = null;
 
     if (wayland) {
@@ -338,12 +338,12 @@ export default class OpenrouterSttExtension extends Extension {
     }
 
     _onKeyRelease(event) {
-        if (event.get_keyval() === Clutter.KEY_F9)
+        if (event.get_key_symbol() === Clutter.KEY_F9)
             this._stopRecording(false);
     }
 
     _onKeyPress(event) {
-        if (event.get_keyval() === Clutter.KEY_Escape)
+        if (event.get_key_symbol() === Clutter.KEY_Escape)
             this._stopRecording(true);
     }
 
