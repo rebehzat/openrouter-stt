@@ -47,11 +47,31 @@ prefs openrouter-stt@foxxy`).
 | Press `Esc` while recording | Cancel |
 | Settings | change model, toggle auto-paste, view/rebind shortcut |
 
-**Auto-paste on Wayland:** GNOME/mutter does not implement the virtual-keyboard protocol,
-so to type into the focused app automatically, install
-[`ydotool`](https://github.com/ReimuNotMoe/ydotool) and add your user to the `input`
-group (or run the daemon as root). Without it, the extension copies to the clipboard and
-prompts you to paste with `Ctrl+V`.
+**Auto-paste on Wayland:** mutter doesn't implement the virtual-keyboard protocol,
+so auto-paste uses [`ydotool`](https://github.com/ReimuNotMoe/ydotool) with its
+root daemon:
+
+```bash
+sudo dnf install ydotool
+sudo tee /usr/lib/systemd/system/ydotoold.service >/dev/null <<'UNIT'
+[Unit]
+Description=ydotoold
+After=systemd-udevd.service
+[Service]
+Type=simple
+ExecStart=/usr/bin/ydotoold --socket-path /run/ydotoold.socket --socket-perm 0666
+Restart=always
+[Install]
+WantedBy=multi-user.target
+UNIT
+sudo systemctl daemon-reload && sudo systemctl enable --now ydotoold
+# client default path -> daemon socket (recreated every login):
+echo 'L+ /run/user/%U/.ydotool_socket - - - - /run/ydotoold.socket' | sudo tee /etc/tmpfiles.d/ydotool-client.conf
+sudo ln -sf /run/ydotoold.socket /run/user/$(id -u)/.ydotool_socket
+```
+
+Without it, the extension copies to the clipboard and prompts you to paste with
+`Ctrl+V`. On X11 sessions it uses `xdotool` instead when available.
 
 ## Model list (as of Sept 2026)
 
