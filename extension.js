@@ -14,7 +14,10 @@ import Clutter from 'gi://Clutter';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-const KEYBINDING = 'toggle-record';
+// NB: this name must EXACTLY match a key in the GSettings schema.
+// Mutter's meta_display_add_keybinding() calls g_settings_get_strv(name)
+// and GLib aborts the entire shell process if the key is missing.
+const KEYBINDING = 'recording-key';
 const API_URL = 'https://openrouter.ai/api/v1/audio/transcriptions';
 const RECORD_FORMAT = 'ogg';
 const MAX_RECORDING_SECONDS = 30 * 60;
@@ -252,9 +255,15 @@ export default class OpenrouterSttExtension extends Extension {
 
         this._buildOverlay();
 
-        Main.wm.addKeybinding(KEYBINDING, this._settings, Meta.KeyBindingFlags.NONE,
-            Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
-            () => this._onRecordKey());
+        // Safety: never call addKeybinding() with a key that isn't in the
+        // schema — mutter aborts gnome-shell on a missing keybinding key.
+        if (this._settings.settings_schema?.has_key(KEYBINDING)) {
+            Main.wm.addKeybinding(KEYBINDING, this._settings, Meta.KeyBindingFlags.NONE,
+                Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
+                () => this._onRecordKey());
+        } else {
+            log(`openrouter-stt: schema key '${KEYBINDING}' missing — keybinding not registered`);
+        }
     }
 
     disable() {

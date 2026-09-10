@@ -69,7 +69,6 @@ export default class OpenrouterSttPreferences extends ExtensionPreferences {
         });
         const tokenEntry = new Gtk.PasswordEntry({ show_peek_icon: true });
         tokenEntry.set_text(this._readToken() ?? '');
-        tokenEntry.set_width_request(320);
         tokenRow.add_suffix(tokenEntry);
         tokenRow.set_activatable_widget(tokenEntry);
 
@@ -125,20 +124,20 @@ export default class OpenrouterSttPreferences extends ExtensionPreferences {
         const presetIndex = PRESET_MODELS.indexOf(current);
         if (presetIndex >= 0) {
             combo.set_active(presetIndex);
-            customRow.visible = false;
+            customRow.set_visible(false);
         } else {
             combo.set_active(PRESET_MODELS.length);
             customEntry.set_text(current);
-            customRow.visible = true;
+            customRow.set_visible(true);
         }
 
         const applyModel = () => {
             const active = combo.get_active();
             if (active >= 0 && active < PRESET_MODELS.length) {
-                customRow.visible = false;
+                customRow.set_visible(false);
                 this._settings.set_string('model', PRESET_MODELS[active]);
             } else {
-                customRow.visible = true;
+                customRow.set_visible(true);
             }
         };
         combo.connect('changed', applyModel);
