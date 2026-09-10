@@ -1,0 +1,42 @@
+/* OpenRouter Speech-to-Text — recording overlay */
+
+.stt-overlay {
+    background-color: rgba(8, 8, 14, 0.55);
+}
+
+.stt-overlay.transcribing {
+    background-color: rgba(8, 8, 14, 0.45);
+}
+
+.stt-box {
+    spacing: 18px;
+    padding: 44px 72px;
+    border-radius: 36px;
+    border: 2px solid rgba(255, 255, 255, 0.22);
+    background-gradient-direction: vertical;
+    background-gradient-start: rgba(28, 28, 40, 0.94);
+    background-gradient-end: rgba(16, 16, 24, 0.94);
+    box-shadow: 0 24px 72px rgba(0, 0, 0, 0.55);
+    text-shadow: rgba(0, 0, 0, 0.7) 0px 2px 6px;
+}
+
+.stt-icon {
+    -st-icon-style: symbolic;
+    color: #ff5d5d;
+}
+
+.stt-icon.transcribing {
+    color: #f5b52d;
+}
+
+.stt-label {
+    font-size: 46px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.stt-model,
+.stt-hint {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.78);
+}

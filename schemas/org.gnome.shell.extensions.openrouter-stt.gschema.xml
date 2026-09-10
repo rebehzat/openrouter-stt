@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.openrouter-stt"
+          path="/org/gnome/shell/extensions/openrouter-stt/"
+          gettext-domain="gnome-shell-extensions">
+    <key name="model" type="s">
+      <default>'openai/whisper-large-v3-turbo'</default>
+      <summary>Speech-to-text model</summary>
+      <description>Model ID used by the OpenRouter /audio/transcriptions endpoint. See https://openrouter.ai/models for available speech-to-text models.</description>
+    </key>
+    <key name="recording-key" type="as">
+      <default>['F9']</default>
+      <summary>Start/stop speech recording</summary>
+      <description>Hold the shortcut to record, release it to stop and transcribe.</description>
+    </key>
+    <key name="auto-paste" type="b">
+      <default>true</default>
+      <summary>Paste transcript at cursor</summary>
+      <description>Automatically paste the transcribed text (clipboard + input injection); falls back to copying to the clipboard.</description>
+    </key>
+  </schema>
+</schemalist>
