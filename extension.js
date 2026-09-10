@@ -1,6 +1,6 @@
 // OpenRouter Speech-to-Text — GNOME Shell extension
-// Hold F9 to record, release to transcribe via OpenRouter's STT API,
-// and the text lands at your cursor (clipboard + input injection).
+// Press F9 to start recording, press again to transcribe via OpenRouter's
+// STT API — the text lands at your cursor (clipboard + input injection).
 
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
@@ -20,7 +20,7 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 const KEYBINDING = 'recording-key';
 const API_URL = 'https://openrouter.ai/api/v1/audio/transcriptions';
 const RECORD_FORMAT = 'ogg';
-const MAX_RECORDING_SECONDS = 30 * 60;
+const MAX_RECORDING_SECONDS = 5 * 60;
 const EOS_TIMEOUT_MS = 10_000;
 
 /* ------------------------------------------------------------------ */
@@ -246,9 +246,6 @@ export default class OpenrouterSttExtension extends Extension {
     enable() {
         this._settings = this.getSettings();
         this._recording = false;
-        this._modalActive = false;
-        this._grab = null;
-        this._releaseId = 0;
         this._watchdog = 0;
         this._recorder = null;
         this._destroyed = false;
@@ -270,10 +267,6 @@ export default class OpenrouterSttExtension extends Extension {
         this._destroyed = true;
         if (this._recording)
             this._stopRecording(true);
-        if (this._releaseId) {
-            global.stage.disconnect(this._releaseId);
-            this._releaseId = 0;
-        }
         Main.wm.removeKeybinding(KEYBINDING);
         this._destroyOverlay();
         this._settings = null;
@@ -281,9 +274,14 @@ export default class OpenrouterSttExtension extends Extension {
 
     /* ---------------- key handling ---------------- */
 
+    // F9 is a TOGGLE: first press starts recording, second press stops it.
+    // (Press-and-hold was unreliable: the stage never delivered the key
+    // release, leaving the modal grab stuck over the whole screen.)
     _onRecordKey() {
-        if (this._recording)
+        if (this._recording) {
+            this._stopRecording(false);
             return;
+        }
 
         const path = GLib.build_filenamev([GLib.get_tmp_dir(), `openrouter-stt-${Date.now()}.ogg`]);
         this._recorder = new Recorder();
@@ -301,28 +299,12 @@ export default class OpenrouterSttExtension extends Extension {
 
         this._recording = true;
         this._showRecordingUI();
-        this._grab = Main.pushModal(this._overlay, {
-            actionMode: Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
-        });
-        this._modalActive = true;
-
-        this._releaseId = global.stage.connect('key-release-event',
-            (_stage, event) => this._onKeyRelease(event));
 
         this._watchdog = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, MAX_RECORDING_SECONDS, () => {
             log('openrouter-stt: max recording time reached, finishing');
             this._stopRecording(false);
             return GLib.SOURCE_REMOVE;
         });
-    }
-
-    _onKeyRelease(event) {
-        const keyval = event.get_keyval();
-        if (keyval === Clutter.KEY_F9) {
-            this._stopRecording(false);
-        } else if (keyval === Clutter.KEY_Escape) {
-            this._stopRecording(true);
-        }
     }
 
     /* ---------------- recording lifecycle ---------------- */
@@ -332,15 +314,10 @@ export default class OpenrouterSttExtension extends Extension {
             return;
         this._recording = false;
 
-        if (this._releaseId) {
-            global.stage.disconnect(this._releaseId);
-            this._releaseId = 0;
-        }
         if (this._watchdog) {
             GLib.source_remove(this._watchdog);
             this._watchdog = 0;
         }
-        this._popModal();
 
         const recorder = this._recorder;
         this._recorder = null;
@@ -401,25 +378,13 @@ export default class OpenrouterSttExtension extends Extension {
         Main.notify('OpenRouter STT', `“${preview}”\n${state}`);
     }
 
-    _popModal() {
-        if (this._modalActive && this._grab) {
-            try {
-                Main.popModal(this._grab);
-            } catch (e) {
-                log(`openrouter-stt: popModal failed: ${e}`);
-            }
-            this._grab = null;
-            this._modalActive = false;
-        }
-    }
-
     /* ---------------- overlay UI ---------------- */
 
     _buildOverlay() {
         this._overlay = new St.Widget({
             style_class: 'stt-overlay',
             visible: false,
-            reactive: true,
+            reactive: false,
         });
         this._overlay.add_constraint(new Clutter.BindConstraint({
             source: global.stage,
@@ -455,7 +420,6 @@ export default class OpenrouterSttExtension extends Extension {
 
     _destroyOverlay() {
         if (this._overlay) {
-            this._popModal();
             Main.uiGroup.remove_child(this._overlay);
             this._overlay.destroy();
             this._overlay = null;
@@ -467,7 +431,7 @@ export default class OpenrouterSttExtension extends Extension {
         this._icon.style_class = 'stt-icon';
         this._label.text = 'Recording…';
         this._modelLabel.text = this._settings.get_string('model');
-        this._hint.text = 'Release F9 to transcribe · Esc to cancel';
+        this._hint.text = 'Press F9 again to transcribe';
         this._overlay.style_class = 'stt-overlay';
         this._overlay.show();
         this._startPulse();

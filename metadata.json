@@ -1,7 +1,7 @@
 {
   "uuid": "openrouter-stt@foxxy",
   "name": "OpenRouter Speech-to-Text",
-  "description": "Hold F9 to record speech; release to transcribe via OpenRouter STT models and paste the text at your cursor.",
+  "description": "Press F9 to record speech; press again to transcribe via OpenRouter STT models and paste the text at your cursor.",
   "url": "https://github.com/rebehzat/openrouter-stt",
   "icon-name": "audio-input-microphone-symbolic",
   "settings-schema": "org.gnome.shell.extensions.openrouter-stt",
