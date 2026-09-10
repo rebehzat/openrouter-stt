@@ -97,7 +97,10 @@ export default class OpenrouterSttPreferences extends ExtensionPreferences {
 
         apiGroup.add(tokenRow);
         apiGroup.add(storageHint);
-        const apiPage = new Adw.PreferencesPage();
+        const apiPage = new Adw.PreferencesPage({
+            title: 'API Key',
+            icon_name: 'dialog-password-symbolic',
+        });
         apiPage.add(apiGroup);
         window.add(apiPage);
 
@@ -151,7 +154,10 @@ export default class OpenrouterSttPreferences extends ExtensionPreferences {
             }
         });
 
-        const modelPage = new Adw.PreferencesPage();
+        const modelPage = new Adw.PreferencesPage({
+            title: 'Model',
+            icon_name: 'system-run-symbolic',
+        });
         modelPage.add(modelGroup);
         window.add(modelPage);
 
@@ -172,7 +178,10 @@ export default class OpenrouterSttPreferences extends ExtensionPreferences {
             this._settings.set_boolean('auto-paste', pasteSwitch.get_active());
         });
         outputGroup.add(pasteRow);
-        const outputPage = new Adw.PreferencesPage();
+        const outputPage = new Adw.PreferencesPage({
+            title: 'Output',
+            icon_name: 'edit-paste-symbolic',
+        });
         outputPage.add(outputGroup);
         window.add(outputPage);
 
@@ -204,7 +213,10 @@ export default class OpenrouterSttPreferences extends ExtensionPreferences {
         settingsRow.set_activatable_widget(settingsButton);
         shortcutGroup.add(settingsRow);
 
-        const shortcutPage = new Adw.PreferencesPage();
+        const shortcutPage = new Adw.PreferencesPage({
+            title: 'Shortcut',
+            icon_name: 'input-keyboard-symbolic',
+        });
         shortcutPage.add(shortcutGroup);
         window.add(shortcutPage);
     }
