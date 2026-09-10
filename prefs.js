@@ -97,7 +97,9 @@ export default class OpenrouterSttPreferences extends ExtensionPreferences {
 
         apiGroup.add(tokenRow);
         apiGroup.add(storageHint);
-        window.add(apiGroup);
+        const apiPage = new Adw.PreferencesPage();
+        apiPage.add(apiGroup);
+        window.add(apiPage);
 
         /* ---------------- model ---------------- */
         const modelGroup = new Adw.PreferencesGroup({ title: 'Model' });
@@ -149,7 +151,9 @@ export default class OpenrouterSttPreferences extends ExtensionPreferences {
             }
         });
 
-        window.add(modelGroup);
+        const modelPage = new Adw.PreferencesPage();
+        modelPage.add(modelGroup);
+        window.add(modelPage);
 
         /* ---------------- output ---------------- */
         const outputGroup = new Adw.PreferencesGroup({ title: 'Output' });
@@ -168,7 +172,9 @@ export default class OpenrouterSttPreferences extends ExtensionPreferences {
             this._settings.set_boolean('auto-paste', pasteSwitch.get_active());
         });
         outputGroup.add(pasteRow);
-        window.add(outputGroup);
+        const outputPage = new Adw.PreferencesPage();
+        outputPage.add(outputGroup);
+        window.add(outputPage);
 
         /* ---------------- shortcut ---------------- */
         const shortcutGroup = new Adw.PreferencesGroup({ title: 'Shortcut' });
@@ -198,7 +204,9 @@ export default class OpenrouterSttPreferences extends ExtensionPreferences {
         settingsRow.set_activatable_widget(settingsButton);
         shortcutGroup.add(settingsRow);
 
-        window.add(shortcutGroup);
+        const shortcutPage = new Adw.PreferencesPage();
+        shortcutPage.add(shortcutGroup);
+        window.add(shortcutPage);
     }
 
     _readToken() {
