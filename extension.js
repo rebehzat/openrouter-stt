@@ -222,10 +222,12 @@ function pasteText(text) {
     let tool = null;
 
     if (wayland) {
-        // ydotool types text directly; wtype needs the (mutter-unsupported)
-        // zwp_virtual_keyboard protocol, so it's only a last resort.
+        // Paste the clipboard via Ctrl+V instead of typing characters:
+        // ydotool's `type` maps chars through a US keymap, which mangles
+        // text on non-US layouts (e.g. Turkish Q: '.'→'ç', ','→'ö').
+        // Raw keycodes for Ctrl+V are layout-independent.
         if (GLib.find_program_in_path('ydotool'))
-            tool = ['ydotool', ['type', '--key-delay=10', text]];
+            tool = ['ydotool', ['key', '--key-delay=30', '29:1', '47:1', '47:0', '29:0']];
         else if (GLib.find_program_in_path('wtype'))
             tool = ['wtype', ['-M', 'ctrl', 'v', '-m', 'ctrl']];
     } else if (GLib.find_program_in_path('xdotool')) {

@@ -70,7 +70,9 @@ echo 'L+ /run/user/%U/.ydotool_socket - - - - /run/ydotoold.socket' | sudo tee /
 sudo ln -sf /run/ydotoold.socket /run/user/$(id -u)/.ydotool_socket
 ```
 
-Without it, the extension copies to the clipboard and prompts you to paste with
+With it, transcripts are pasted via clipboard + Ctrl+V (layout-independent —
+works with any keyboard layout, e.g. Turkish Q). Without it, the extension copies
+to the clipboard and prompts you to paste with
 `Ctrl+V`. On X11 sessions it uses `xdotool` instead when available.
 
 ## Model list (as of Sept 2026)
