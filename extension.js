@@ -474,7 +474,7 @@ export default class OpenrouterSttExtension extends Extension {
     }
 
     _showTranscribingUI() {
-        this._icon.icon_name = 'process-working-symbolic';
+        this._icon.icon_name = 'content-loading-symbolic';
         this._icon.style_class = 'stt-icon transcribing';
         this._label.text = 'Transcribing…';
         this._hint.text = '';
