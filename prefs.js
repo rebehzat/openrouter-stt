@@ -189,7 +189,7 @@ export default class OpenrouterSttPreferences extends ExtensionPreferences {
         const shortcutGroup = new Adw.PreferencesGroup({ title: 'Shortcut' });
         const shortcutRow = new Adw.ActionRow({
             title: 'Recording shortcut',
-            subtitle: 'Press to start recording, press again to transcribe.',
+            subtitle: 'Hold to record, release to transcribe. Esc cancels a recording.',
         });
         const keys = this._settings.get_strv('recording-key');
         const keyLabel = new Gtk.Label({ label: keys.join(', ') });

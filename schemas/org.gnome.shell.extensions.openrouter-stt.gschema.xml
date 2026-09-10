@@ -11,7 +11,7 @@
     <key name="recording-key" type="as">
       <default>['F9']</default>
       <summary>Start/stop speech recording</summary>
-      <description>Press the shortcut to start recording; press it again to stop and transcribe.</description>
+      <description>Hold the shortcut to record; release it to stop and transcribe. Esc cancels.</description>
     </key>
     <key name="auto-paste" type="b">
       <default>true</default>
