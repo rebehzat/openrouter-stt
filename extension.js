@@ -311,8 +311,9 @@ export default class OpenrouterSttExtension extends Extension {
         }
 
         this._recording = true;
-        this._showRecordingUI();
 
+        // Grab + handlers + watchdog are set up BEFORE any UI code so a
+        // UI failure can never leave the grab active without release handling.
         this._grab = Main.pushModal(this._overlay, {
             actionMode: Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
         });
@@ -328,6 +329,12 @@ export default class OpenrouterSttExtension extends Extension {
             this._stopRecording(false);
             return GLib.SOURCE_REMOVE;
         });
+
+        try {
+            this._showRecordingUI();
+        } catch (e) {
+            log(`openrouter-stt: indicator error: ${e}`);
+        }
     }
 
     _onKeyRelease(event) {
@@ -507,24 +514,27 @@ export default class OpenrouterSttExtension extends Extension {
 
     _startPulse() {
         this._stopPulse();
-        this._icon.pivot_point = new Clutter.Point({ x: 0.5, y: 0.5 });
-        for (const property of ['scale-x', 'scale-y']) {
-            const transition = new Clutter.PropertyTransition({
-                property,
-                from: 1.0,
-                to: 1.18,
+        try {
+            this._icon.set_pivot_point(0.5, 0.5);
+            this._icon.ease({
+                scale_x: 1.18,
+                scale_y: 1.18,
                 duration: 650,
-                progress_mode: Clutter.AnimationMode.EASE_IN_OUT_QUAD,
+                mode: Clutter.AnimationMode.EASE_IN_OUT_QUAD,
                 auto_reverse: true,
                 repeat_count: -1,
             });
-            this._icon.add_transition(`pulse-${property}`, transition);
+        } catch (e) {
+            log(`openrouter-stt: pulse animation failed: ${e}`);
         }
     }
 
     _stopPulse() {
-        for (const property of ['scale-x', 'scale-y'])
-            this._icon.remove_transition(`pulse-${property}`);
+        try {
+            this._icon.remove_all_transitions();
+        } catch (e) {
+            // ignore
+        }
         this._icon.scale_x = 1.0;
         this._icon.scale_y = 1.0;
     }
