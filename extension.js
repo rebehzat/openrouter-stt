@@ -429,7 +429,6 @@ export default class OpenrouterSttExtension extends Extension {
         this._icon = new St.Icon({
             icon_name: 'audio-input-microphone-symbolic',
             icon_size: 128,
-            icon_style: St.IconStyle.SYMBOLIC,
             style_class: 'stt-icon',
         });
         this._label = new St.Label({ text: 'Recording…', style_class: 'stt-label' });
